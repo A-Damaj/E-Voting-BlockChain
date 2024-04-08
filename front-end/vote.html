@@ -46,12 +46,248 @@
         </div>
         <div class="vote">
             <form id="votingForm">
-                <input type="number" name="candidateId">
+                <input type="number" id="candidateId" name="candidateId">
             </form>
-            <button type="button">Vote</button>
+            <button type="button" onclick="castVote()">Vote</button>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
-    </body>
+        <script>
+            // Contract ABI and address
+            const contractAbi = [
+ {
+ "inputs": [
+ {
+ "internalType": "string[]",
+ "name": "_initialCandidateNames",
+ "type": "string[]"
+ },
+ {
+ "internalType": "uint256",
+ "name": "_durationInMinutes",
+ "type": "uint256"
+ }
+ ],
+ "stateMutability": "nonpayable",
+ "type": "constructor"
+ },
+ {
+ "inputs": [],
+ "name": "NumberOfCandidates",
+ "outputs": [
+ {
+ "internalType": "uint256",
+ "name": "",
+ "type": "uint256"
+ }
+ ],
+ "stateMutability": "view",
+ "type": "function"
+ },
+ {
+ "inputs": [
+ {
+ "internalType": "string",
+ "name": "_name",
+ "type": "string"
+ }
+ ],
+ "name": "addNewCandidate",
+ "outputs": [],
+ "stateMutability": "nonpayable",
+ "type": "function"
+ },
+ {
+ "inputs": [
+ {
+ "internalType": "uint256",
+ "name": "",
+ "type": "uint256"
+ }
+ ],
+ "name": "candidates",
+ "outputs": [
+ {
+ "internalType": "string",
+ "name": "name",
+ "type": "string"
+ },
+ {
+ "internalType": "uint256",
+ "name": "voteCount",
+ "type": "uint256"
+ }
+ ],
+ "stateMutability": "view",
+ "type": "function"
+ },
+ {
+ "inputs": [
+ {
+ "internalType": "uint256",
+ "name": "_candidateIndex",
+ "type": "uint256"
+ }
+ ],
+ "name": "castVote",
+ "outputs": [],
+ "stateMutability": "nonpayable",
+ "type": "function"
+ },
+ {
+ "inputs": [],
+ "name": "getAllCandidates",
+ "outputs": [
+ {
+ "internalType": "string[]",
+ "name": "",
+ "type": "string[]"
+ },
+ {
+ "internalType": "uint256[]",
+ "name": "",
+ "type": "uint256[]"
+ }
+ ],
+ "stateMutability": "view",
+ "type": "function"
+ },
+ {
+ "inputs": [
+ {
+ "internalType": "uint256",
+ "name": "_candidateIndex",
+ "type": "uint256"
+ }
+ ],
+ "name": "getCandidateVotes",
+ "outputs": [
+ {
+ "internalType": "uint256",
+ "name": "",
+ "type": "uint256"
+ }
+ ],
+ "stateMutability": "view",
+ "type": "function"
+ },
+ {
+ "inputs": [],
+ "name": "getRemainingTime",
+ "outputs": [
+ {
+ "internalType": "uint256",
+ "name": "",
+ "type": "uint256"
+ }
+ ],
+ "stateMutability": "view",
+ "type": "function"
+ },
+ {
+ "inputs": [],
+ "name": "getVotingStatus",
+ "outputs": [
+ {
+ "internalType": "bool",
+ "name": "",
+ "type": "bool"
+ }
+ ],
+ "stateMutability": "view",
+ "type": "function"
+ },
+ {
+ "inputs": [
+ {
+ "internalType": "address",
+ "name": "",
+ "type": "address"
+ }
+ ],
+ "name": "hasVoted",
+ "outputs": [
+ {
+ "internalType": "bool",
+ "name": "",
+ "type": "bool"
+ }
+ ],
+ "stateMutability": "view",
+ "type": "function"
+ },
+ {
+ "inputs": [],
+ "name": "owner",
+ "outputs": [
+ {
+ "internalType": "address",
+ "name": "",
+ "type": "address"
+ }
+ ],
+ "stateMutability": "view",
+ "type": "function"
+ },
+ {
+ "inputs": [],
+ "name": "votingEnd",
+ "outputs": [
+ {
+ "internalType": "uint256",
+ "name": "",
+ "type": "uint256"
+ }
+ ],
+ "stateMutability": "view",
+ "type": "function"
+ },
+ {
+ "inputs": [],
+ "name": "votingStart",
+ "outputs": [
+ {
+ "internalType": "uint256",
+ "name": "",
+ "type": "uint256"
+ }
+ ],
+ "stateMutability": "view",
+ "type": "function"
+ }
+]
+; 
+            const contractAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138";
 
+            // Function to cast vote
+            async function castVote() {
+                if (window.ethereum) {
+                    try {
+                        const web3 = new Web3(window.ethereum);
+                        await window.ethereum.enable();
+                        const accounts = await web3.eth.getAccounts();
+                        const votingContract = new web3.eth.Contract(contractAbi, contractAddress);
+
+                        const candidateId = parseInt(document.getElementById("candidateId").value);
+
+                        // Call the castVote function on the smart contract
+                        const result = await votingContract.methods.castVote(candidateId).send({ from: accounts[0] });
+
+                        if (result.status) {
+                            alert("Vote cast successfully!");
+                            // Optionally redirect or update the UI
+                        } else {
+                            alert("Error casting vote. Please try again.");
+                        }
+
+                    } catch (error) {
+                        console.error(error);
+                        alert("An error occurred. Please check the console for details.");
+                    }
+                } else {
+                    console.error('MetaMask not detected. Please install MetaMask.');
+                }
+            }
+        </script>
+    </body>
 </html>
