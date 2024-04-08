@@ -228,48 +228,43 @@
 
         const contractAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138"; // Replace with your contract address
 
-               async function connectToMetamask() {
-            if (window.ethereum) {
+              async function connectToMetamask() {
+    if (window.ethereum) {
+        try {
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0x12163' }] // Hexadecimal chain ID for Volta
+            });
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            userData = { account: accounts[0] };
+            alert("Connected to MetaMask with account: " + userData.account);
+        } catch (switchError) {
+            // This error code indicates that the chain has not been added to MetaMask.
+            if (switchError.code === 4902) {
                 try {
                     await window.ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: '73799' }], // Hexadecimal chain ID for Volta
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: '0x12163',
+                            chainName: 'Volta',
+                            rpcUrls: ['https://volta-rpc.energyweb.org'],
+                            blockExplorerUrls: ['http://volta-explorer.energyweb.org'],
+                            nativeCurrency: { symbol: 'VT', decimals: 18 },
+                        }]
                     });
-
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    userData = { account: accounts[0] };
-                    alert("Connected to MetaMask with account: " + userData.account);
-                } catch (switchError) {
-                    // This error code indicates that the chain has not been added to MetaMask.
-                    if (switchError.code === 4902) {
-                        try {
-                            await window.ethereum.request({
-                                method: 'wallet_addEthereumChain',
-                                params: [
-                                    {
-                                        chainId: '73799',
-                                        chainName: 'Volta',
-                                        rpcUrls: ['https://volta-rpc.energyweb.org'],
-                                        blockExplorerUrls: ['http://volta-explorer.energyweb.org'],
-                                        nativeCurrency: {
-                                            symbol: 'VT',
-                                            decimals: 18
-                                        },
-                                    },
-                                ],
-                            });
-                        } catch (addError) {
-                            // handle "add" error
-                            console.error("Error adding Volta network:", addError);
-                        }
-                    }
-                    // handle other "switch" errors
-                    console.error("Error switching to Volta network:", switchError);
+                } catch (addError) {
+                    // handle "add" error
+                    console.error("Error adding Volta network:", addError);
                 }
-            } else {
-                console.error("MetaMask not detected. Please install MetaMask.");
             }
+            // handle other "switch" errors
+            console.error("Error switching to Volta network:", switchError);
         }
+    } else {
+        console.error("MetaMask not detected. Please install MetaMask.");
+    }
+}
+
 
         async function getCandidatesAndVotes() {
             if (!userData) {
