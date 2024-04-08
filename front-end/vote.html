@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <title>EVS: E-voting System</title>
+    </head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .instructions {
+            padding: 10px;
+            font-size: larger;
+        }
+
+        .vote {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .vote input {
+            padding: 5px;
+            font-size: large;
+        }
+
+        .vote button {
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: x-large;
+            padding: 10px;
+        }
+    </style>
+    <body>
+        <div class="instructions">
+            <p>Instructions for voting:</p>
+            <ul>
+                <li>
+                    You must be connected to metamask. For more info please visit https://www.metamask.io. 
+                </li>
+                <li>To vote, you shall look in candidates page, look up the ID of your preferred candidate and enter it in this page to vote.</li>
+                <li>Once you vote you cannot vote again.</li>
+                <li>To see results of election please go to candidates page where vote count is included for each candidate.</li>
+            </ul>
+        </div>
+        <div class="vote">
+            <form id="votingForm">
+                <input type="number" name="candidateId">
+            </form>
+            <button type="button">Vote</button>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    </body>
+
+</html>

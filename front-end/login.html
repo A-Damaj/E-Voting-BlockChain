@@ -1,0 +1,102 @@
+<html>
+    <head>
+        <title>EVS: E-voting System</title>
+    </head>
+    <style>
+        body { 
+            margin: 0;
+            padding: 0;
+        }
+
+        .navigation {
+            display: block;
+            background-color: black;
+            height: 60px;
+            width: 100%;
+            position: fixed;
+        }
+
+        .content {
+            position: relative;
+            top: 65px
+        }
+
+        .page {
+            float: left;
+            margin: 10px;
+            padding: 5px;
+        }
+
+        .page a {
+            color: white;
+            text-decoration: none;
+            font-size: x-large;
+        }
+
+        .form {
+            background-color: #808080;
+            width: 500px;
+            height: 500pxs;
+            padding: 20px;
+            font-size: large;
+            position: relative;
+            left: 35%;
+            top: 50px;
+            text-align: center;
+        }
+
+        .form h2 {
+            text-align: center;
+        }
+
+        .form-element {
+            margin: 10px;
+            padding: 10px;
+        }
+
+        .form-element label {
+            margin-right: 10px;
+        }
+
+        .form-element input { 
+            border-radius: 10px;
+            border: none;
+            font-size: 15px;
+            padding: 5px;
+        }
+
+        button {
+            font-size: larger;
+            font-family: 'Times New Roman', Times, serif;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 10px; 
+            padding: 10px;
+            margin: 20px;
+        }
+
+    </style>
+
+    <body>
+        <div>
+            <div class="navigation">
+                <div class="page">
+                    <a href="">All Candidates</a>
+                </div>
+            </div>
+            <div class="content">
+                <div class="form">
+                    <form>   
+                        <h2>Welcome to EVS e-voting system <br>Click on "Connect Metamask" To Login </h2>
+                        <button type="button" onclick="connectToMetamask()">Connect Metamask</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+        <script src="login.js"></script>
+        
+    </body>
+</html>
