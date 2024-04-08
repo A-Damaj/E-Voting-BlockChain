@@ -228,12 +228,12 @@
 
         const contractAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138"; // Replace with your contract address
 
-              async function connectToMetamask() {
+async function connectToMetamask() {
     if (window.ethereum) {
         try {
             await window.ethereum.request({
                 method: 'wallet_switchEthereumChain',
-                params: [{ chainId: '0x12163' }] // Hexadecimal chain ID for Volta
+                params: [{ chainId: '0x12047' }] // Hexadecimal chain ID for Volta
             });
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             userData = { account: accounts[0] };
@@ -245,10 +245,10 @@
                     await window.ethereum.request({
                         method: 'wallet_addEthereumChain',
                         params: [{
-                            chainId: '0x12163',
+                            chainId: '0x12047',
                             chainName: 'Volta',
                             rpcUrls: ['https://volta-rpc.energyweb.org'],
-                            blockExplorerUrls: ['http://volta-explorer.energyweb.org'],
+                            blockExplorerUrls: ['https://volta-explorer.energyweb.org'], // Use HTTPS here
                             nativeCurrency: { symbol: 'VT', decimals: 18 },
                         }]
                     });
