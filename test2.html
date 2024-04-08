@@ -233,7 +233,7 @@
                 try {
                     await window.ethereum.request({
                         method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: '0x1D32' }], // Hexadecimal chain ID for Volta
+                        params: [{ chainId: '73799' }], // Hexadecimal chain ID for Volta
                     });
 
                     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -247,7 +247,7 @@
                                 method: 'wallet_addEthereumChain',
                                 params: [
                                     {
-                                        chainId: '0x1D32',
+                                        chainId: '73799',
                                         chainName: 'Volta',
                                         rpcUrls: ['https://volta-rpc.energyweb.org'],
                                         blockExplorerUrls: ['http://volta-explorer.energyweb.org'],
