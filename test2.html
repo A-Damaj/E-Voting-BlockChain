@@ -254,11 +254,17 @@ async function getCandidatesAndVotes() {
 
     try {
         const candidates = await contract.methods.getAllCandidates().call();
-        document.getElementById("candidateList").innerHTML = JSON.stringify(candidates, null, 2);
+        let candidateListHtml = "<ul>";
+        for (let i = 0; i < candidates["0"].length; i++) {
+            candidateListHtml += `<li>${candidates["0"][i]} - Votes: ${candidates["1"][i]}</li>`;
+        }
+        candidateListHtml += "</ul>";
+        document.getElementById("candidateList").innerHTML = candidateListHtml;
     } catch (error) {
         console.error("Error fetching candidates:", error);
     }
 }
+
 
 
         async function castVote() {
