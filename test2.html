@@ -226,12 +226,13 @@
 	}
 ];
 
-        const contractAddress = "0xd9145CCE52D386f254917e481eB44e9943F39138"; // Replace with your contract address
+        const contractAddress = "0x04A99E9AdC8D665C740edD4638319545a2C67879";
 
         async function connectToMetamask() {
             if (window.ethereum) {
                 try {
                     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+					console.log(accounts);
                     userData = { account: accounts[0] };
                     alert("Connected to MetaMask with account: " + userData.account);
                 } catch (error) {
