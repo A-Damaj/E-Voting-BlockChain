@@ -1,78 +1,55 @@
 <html>
     <head>
-        <title>EVS: E-voting System</title>
+        <title>EVS: E-Voting System</title>
     </head>
     <style>
-        body {
+        body { 
             margin: 0;
             padding: 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: black;
+            padding: 10px;
+            font-size: x-large;
         }
 
         .navigation {
             display: block;
             background-color: black;
-            height: 50px;
+            height: 75px;
             width: 100%;
             position: fixed;
         }
 
-        .navigation a {
-           color: white;
-           text-decoration: none;
-           font-size: 25px;
-           margin: 10px;
-           padding: 10px;
-        }
-
-        .instructions {
-            padding: 10px;
-            font-size: larger;
-            position: relative;
-            top: 50px;
-        }
-
-        .vote {
+        .navigation h1 {
             text-align: center;
-            margin-top: 30px;
-            position: relative;
-            top: 20px;
-        }
-
-        .vote input {
-            padding: 5px;
-            font-size: large;
-        }
-
-        .vote button {
-            background-color: black;
             color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: x-large;
+            font-weight: lighter;
+        }
+
+        #candidateList {
+            position: relative;
+            top: 100px;
             padding: 10px;
         }
+
+        table, th, td{
+            border: 1px solid black;
+            font-size: large;
+            border-collapse: collapse;
+            padding: 10px;
+            text-align: center;
+        }
+
     </style>
     <body>
         <div class="navigation">
-            <a href="../front-end/candidates.html">All Candidates</a>
-            <a href="../front-end/results.html">Check Voting Results</a>
+            <h1>List Of All Candidates</h1>
+            <a href="../front-end/vote.html">Start Voting</a>
         </div>
-        <div class="instructions">
-            <p><u>Instructions for voting:</u></p>
-            <ul>
-                <li>You must be connected to metamask. For more info please visit https://www.metamask.io. </li>
-                <li>To vote, you shall look in 'All Candidates' page, look up the ID of your preferred candidate, and enter it in this page to vote.</li>
-                <li>Once you vote you cannot vote again.</li>
-                <li>To see results of election please go to 'Check Voting Results' page where vote count is included for each candidate.</li>
-            </ul>
-        </div>
-        <div class="vote">
-            <form id="votingForm">
-                <input type="number" name="candidateId" placeholder="Enter Candidate Id">
-            </form>
-            <button type="button" onclick="castVote()">Vote</button>
-        </div>
-
+        <div id="candidateList"></div>
         <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
         <script>
             let userData = null;
@@ -279,6 +256,7 @@
         }
     ];
     
+    const contractAddress = "0x04A99E9AdC8D665C740edD4638319545a2C67879";
     window.addEventListener('load', ()=>{ 
         var isConnected = sessionStorage.getItem("metamaskConnected") === true;
 
@@ -288,15 +266,13 @@
             console.log('Already Connected to Metamask');
         }
     });
-
-    const contractAddress = "0x04A99E9AdC8D665C740edD4638319545a2C67879";
      
     async function connectToMetamask() {
         if (window.ethereum) {
             try {
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                console.log(accounts);
                 userData = { account: accounts[0] };
+                getCandidatesAndVotes();
             } catch (error) {
                 console.error("User denied account access");
             }
@@ -305,29 +281,27 @@
         }
     }
     
-    async function castVote() {
+    async function getCandidatesAndVotes() {
         if (!userData) {
             alert("Please connect to MetaMask first.");
             return;
         }
-
-        const candidateId = parseInt(document.getElementById("votingForm").elements["candidateId"].value);
-        if (isNaN(candidateId)) {
-            alert("Invalid candidate ID. Please enter a number.");
-            return;
-        }
-
+    
         const web3 = new Web3(window.ethereum);
         const contract = new web3.eth.Contract(contractAbi, contractAddress);
-
+    
         try {
-            await contract.methods.castVote(candidateId).send({ from: userData.account });
-            alert("Vote cast successfully!");
-            // Optionally refresh the candidate list or update UI
+            const candidates = await contract.methods.getAllCandidates().call();
+            let candidateListHtml = "<table><tr><th>ID</th><th>Name</th></tr>";
+                for (let i = 0; i < candidates["0"].length; i++) {
+                    candidateListHtml += `<tr><td>${i}</td><td>${candidates["0"][i]}</td></tr>`;
+                }
+            candidateListHtml += "</table>";
+            document.getElementById("candidateList").innerHTML = candidateListHtml;
         } catch (error) {
-            console.error("Error casting vote:", error);
+            console.error("Error fetching candidates:", error);
         }
     }
     </script>
-</body>
+    </body>
 </html>

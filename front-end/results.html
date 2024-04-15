@@ -1,0 +1,322 @@
+<html>
+  <head>
+    <title>EVS: E-Voting System</title>
+  </head>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      font-weight: lighter;
+    }
+
+    .navigation {
+      display: block;
+      background-color: black;
+      height: 75px;
+      width: 100%;
+      position: fixed;
+    }
+
+    .results {
+      position: relative;
+      top: 90px;
+      width: 100%;
+      height: 50px;
+    }
+  </style>
+
+  <body>
+    <div class="navigation">
+      <h1>Voting Results</h1>
+    </div>
+    <div class="results">
+      <canvas id="results-chart" style="width:100%;max-width:600px"></canvas>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+    <script>
+      let userData = null;
+      const contractAbi = [
+        {
+          inputs: [
+            {
+              internalType: "string[]",
+              name: "_initialCandidateNames",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256",
+              name: "_durationInMinutes",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [],
+          name: "NumberOfCandidates",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "_name",
+              type: "string",
+            },
+          ],
+          name: "addNewCandidate",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          name: "candidates",
+          outputs: [
+            {
+              internalType: "string",
+              name: "name",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "voteCount",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_candidateIndex",
+              type: "uint256",
+            },
+          ],
+          name: "castVote",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getAllCandidates",
+          outputs: [
+            {
+              internalType: "string[]",
+              name: "",
+              type: "string[]",
+            },
+            {
+              internalType: "uint256[]",
+              name: "",
+              type: "uint256[]",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "_candidateIndex",
+              type: "uint256",
+            },
+          ],
+          name: "getCandidateVotes",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getRemainingTime",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "getVotingStatus",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          name: "hasVoted",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "votingEnd",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "votingStart",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+      ];
+
+      const contractAddress = "0x04A99E9AdC8D665C740edD4638319545a2C67879";
+      window.addEventListener("load", () => {
+        var isConnected = sessionStorage.getItem("metamaskConnected") === true;
+
+        if (!isConnected) {
+          connectToMetamask();
+        } else {
+          console.log("Already Connected to Metamask");
+        }
+      });
+
+      async function connectToMetamask() {
+        if (window.ethereum) {
+          try {
+            const accounts = await window.ethereum.request({
+              method: "eth_requestAccounts",
+            });
+            userData = { account: accounts[0] };
+            getCandidatesAndVotes();
+          } catch (error) {
+            console.error("User denied account access");
+          }
+        } else {
+          console.error("MetaMask not detected. Please install MetaMask.");
+        }
+      }
+
+      async function getCandidatesAndVotes() {
+        if (!userData) {
+          alert("Please connect to MetaMask first.");
+          return;
+        }
+
+        const web3 = new Web3(window.ethereum);
+        const contract = new web3.eth.Contract(contractAbi, contractAddress);
+
+        try {
+          const candidates = await contract.methods.getAllCandidates().call();
+          console.log(candidates);
+          const candidateNames = candidates["0"];
+          const voteCounts = candidates["1"];
+          const barColors = [
+            "#b91d47",
+            "#00aba9",
+            "#2b5797",
+            "#e8c3b9",
+            "#1e7145",
+          ];
+
+          const el = document.getElementById("results-chart").getContext("2d");
+          const myChart = new Chart(el, {
+            type: "pie",
+            data: {
+              labels: candidateNames,
+              datasets: [
+                {
+                  backgroundColor: barColors,
+                  data: voteCounts,
+                },
+              ],
+            },
+            options: {
+              title: {
+                display: true,
+                text: "Voting Resulsts",
+              },
+            },
+          });
+        } catch (error) {
+          console.error("Error fetching candidates:", error);
+        }
+      }
+    </script>
+  </body>
+</html>

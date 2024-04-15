@@ -3,7 +3,7 @@
         <title>EVS: E-voting System</title>
     </head>
     <style>
-        body {
+        body { 
             margin: 0;
             padding: 0;
         }
@@ -11,66 +11,80 @@
         .navigation {
             display: block;
             background-color: black;
-            height: 50px;
+            height: 75px;
             width: 100%;
             position: fixed;
         }
 
-        .navigation a {
-           color: white;
-           text-decoration: none;
-           font-size: 25px;
-           margin: 10px;
-           padding: 10px;
-        }
-
-        .instructions {
-            padding: 10px;
-            font-size: larger;
-            position: relative;
-            top: 50px;
-        }
-
-        .vote {
+        .navigation h1 {
             text-align: center;
-            margin-top: 30px;
+            color: white;
+            font-weight: lighter;
+        }
+
+        .content {
             position: relative;
-            top: 20px;
+            top: 65px
         }
 
-        .vote input {
-            padding: 5px;
+        .form {
+            background-color: #808080;
+            width: 500px;
+            height: 500pxs;
+            padding: 20px;
             font-size: large;
+            position: relative;
+            left: 35%;
+            top: 50px;
+            text-align: center;
         }
 
-        .vote button {
+        .form h2 {
+            text-align: center;
+        }
+
+        .form-element {
+            margin: 10px;
+            padding: 10px;
+        }
+
+        .form-element label {
+            margin-right: 10px;
+        }
+
+        .form-element input { 
+            border-radius: 10px;
+            border: none;
+            font-size: 15px;
+            padding: 5px;
+        }
+
+        button {
+            font-size: larger;
+            font-family: 'Times New Roman', Times, serif;
             background-color: black;
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: x-large;
+            border-radius: 10px; 
             padding: 10px;
+            margin: 20px;
         }
+
     </style>
+
     <body>
-        <div class="navigation">
-            <a href="../front-end/candidates.html">All Candidates</a>
-            <a href="../front-end/results.html">Check Voting Results</a>
-        </div>
-        <div class="instructions">
-            <p><u>Instructions for voting:</u></p>
-            <ul>
-                <li>You must be connected to metamask. For more info please visit https://www.metamask.io. </li>
-                <li>To vote, you shall look in 'All Candidates' page, look up the ID of your preferred candidate, and enter it in this page to vote.</li>
-                <li>Once you vote you cannot vote again.</li>
-                <li>To see results of election please go to 'Check Voting Results' page where vote count is included for each candidate.</li>
-            </ul>
-        </div>
-        <div class="vote">
-            <form id="votingForm">
-                <input type="number" name="candidateId" placeholder="Enter Candidate Id">
-            </form>
-            <button type="button" onclick="castVote()">Vote</button>
+        <div>
+            <div class="navigation">
+                <h1>Welcome to EVS e-voting system</h1>
+            </div>
+            <div class="content">
+                <div class="form">
+                    <form>   
+                        <h2>Click on "Connect Metamask" To Login </h2>
+                        <button type="button" onclick="connectToMetamask()">Connect Metamask</button>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
@@ -279,55 +293,23 @@
         }
     ];
     
-    window.addEventListener('load', ()=>{ 
-        var isConnected = sessionStorage.getItem("metamaskConnected") === true;
-
-        if (!isConnected) {
-            connectToMetamask();
-        } else {
-            console.log('Already Connected to Metamask');
-        }
-    });
-
-    const contractAddress = "0x04A99E9AdC8D665C740edD4638319545a2C67879";
+            const contractAddress = "0x04A99E9AdC8D665C740edD4638319545a2C67879";
      
-    async function connectToMetamask() {
-        if (window.ethereum) {
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                console.log(accounts);
-                userData = { account: accounts[0] };
-            } catch (error) {
-                console.error("User denied account access");
+            async function connectToMetamask() {
+                if (window.ethereum) {
+                    try {
+                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        userData = { account: accounts[0] };
+                        sessionStorage.setItem("metamaskConnected", true);
+                        alert("Connected to MetaMask with account: " + userData.account);
+                        window.location.href = 'vote.html';
+                    } catch (error) {
+                        console.error("User denied account access");
+                    }
+                } else {
+                    console.error("MetaMask not detected. Please install MetaMask.");
+                }
             }
-        } else {
-            console.error("MetaMask not detected. Please install MetaMask.");
-        }
-    }
-    
-    async function castVote() {
-        if (!userData) {
-            alert("Please connect to MetaMask first.");
-            return;
-        }
-
-        const candidateId = parseInt(document.getElementById("votingForm").elements["candidateId"].value);
-        if (isNaN(candidateId)) {
-            alert("Invalid candidate ID. Please enter a number.");
-            return;
-        }
-
-        const web3 = new Web3(window.ethereum);
-        const contract = new web3.eth.Contract(contractAbi, contractAddress);
-
-        try {
-            await contract.methods.castVote(candidateId).send({ from: userData.account });
-            alert("Vote cast successfully!");
-            // Optionally refresh the candidate list or update UI
-        } catch (error) {
-            console.error("Error casting vote:", error);
-        }
-    }
-    </script>
-</body>
+        </script>
+    </body>
 </html>
