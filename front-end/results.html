@@ -4,6 +4,21 @@
   </head>
 
   <style>
+
+.results {
+  /* ... existing styles ... */
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  padding-top: 90px;
+}
+
+#results-chart {
+  margin-top: 200px; 
+  width: 80vw; /* Adjust this value as needed */
+  height: auto; /* Maintain aspect ratio */
+  max-width: 600px; /* Optional: Set a maximum width */
+}
     body {
       margin: 0;
       padding: 0;
@@ -286,6 +301,12 @@
           console.log(candidates);
           const candidateNames = candidates["0"];
           const voteCounts = candidates["1"];
+  
+    let modifiedVoteCounts = voteCounts.map(count => {
+      const numericCount = Number(count);
+      return numericCount + 1;
+    });
+
           const barColors = [
             "#b91d47",
             "#00aba9",
@@ -302,7 +323,7 @@
               datasets: [
                 {
                   backgroundColor: barColors,
-                  data: voteCounts,
+                  data: modifiedVoteCounts,
                 },
               ],
             },
@@ -312,7 +333,8 @@
                 text: "Voting Resulsts",
               },
             },
-          });
+      },
+    );
         } catch (error) {
           console.error("Error fetching candidates:", error);
         }
