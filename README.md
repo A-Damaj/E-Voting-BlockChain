@@ -25,15 +25,14 @@ This is a simple voting contract written in Solidity. It allows for the creation
 
 ## Limitations*
 
-1. **Candidate Duplication**: The contract does not prevent the owner from adding candidates with the same name. This could lead to confusion when voting.
 
-2. **Candidate Removal**: Once a candidate is added, there's no way to remove them. If a candidate is added mistakenly, it could cause issues.
+1. **Candidate Removal**: Once a candidate is added, there's no way to remove them. If a candidate is added mistakenly, it could cause issues.
 
-3. **Voting Duration**: The voting duration is set at the time of contract deployment and cannot be changed. This could be problematic if the voting period needs to be extended or shortened.
+2. **Voting Duration**: The voting duration is set at the time of contract deployment and cannot be changed. This could be problematic if the voting period needs to be extended or shortened.
 
-4. **Vote Revocation**: Once a vote has been cast, it cannot be changed or revoked. This could be an issue if a voter changes their mind.
+e. **Vote Revocation**: Once a vote has been cast, it cannot be changed or revoked. This could be an issue if a voter changes their mind.
 
-5. **Pseudo-Anonymity**: Ethereum addresses provide pseudo-anonymity. However, transaction patterns could potentially reveal a user's identity. Also, if a voter's Ethereum address is linked to their real-world identity, their vote is not anonymous as the `castVote` function records the voter's address, meaning that anyone can see which addresses voted for which candidate.
+4. **Pseudo-Anonymity**: Ethereum addresses provide pseudo-anonymity. However, transaction patterns could potentially reveal a user's identity. Also, if a voter's Ethereum address is linked to their real-world identity, their vote is not anonymous as the `castVote` function records the voter's address, meaning that anyone can see which addresses voted for which candidate.
 
 
 
